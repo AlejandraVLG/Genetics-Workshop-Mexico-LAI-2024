@@ -1,0 +1,57 @@
+{
+  "name": "phased_rfmix",
+  "title": "Run SHAPEIT4 and RfMix for Local Ancestry Inference",
+  "summary": "Phases a VCF file using SHAPEIT4 and runs RfMix for local ancestry inference",
+  "dxapi": "1.0.0",
+  "inputSpec": [
+    {
+      "name": "input_vcf",
+      "class": "file",
+      "optional": false,
+      "label": "Input VCF File"
+    },
+    {
+      "name": "genetic_map",
+      "class": "file",
+      "optional": false,
+      "label": "Genetic Map File"
+    },
+    {
+      "name": "classes_txt",
+      "class": "file",
+      "optional": false,
+      "label": "Classes File"
+    },
+    {
+      "name": "sample_map",
+      "class": "file",
+      "optional": false,
+      "label": "Sample Map File"
+    }
+  ],
+  "outputSpec": [
+    {
+      "name": "phased_vcf",
+      "class": "file",
+      "label": "Phased VCF Output"
+    },
+    {
+      "name": "rfmix_output",
+      "class": "file",
+      "label": "RfMix Output"
+    }
+  ],
+  "runSpec": {
+    "interpreter": "bash",
+    "file": "phased_rfmix_dn.sh",
+    "systemRequirements": {
+      "main": {
+        "instanceType": "mem2_hdd2_x2"
+      }
+    },
+    "executionPolicy": {
+      "restartOnFailure": true
+    }
+  },
+  "version": "1.0.0"
+}
