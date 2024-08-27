@@ -77,16 +77,6 @@ python collapse_ancestry.py \
 
 Note: all autosomes must have successfully completed, and including chromosome X is optional with the flag. The order of the population labels correspond with the order of labels in the classes file.
 
-#### Posthoc bed file filter (OPTIONAL) ####
-After the first bed file is created, it might be desirable to mask certain regions, for example if a particular region is shown to be frequently misspecified empirically in the reference panel. I have only used this script once, so it almost assuredly has some bugs, but I have provided it here as a starting point in case posthoc masking is a desirable feature. An example run is as follows:
-
-```
-cat bed_files.txt | while read line; do \
-python mask_lcr_bed.py \
---bed ${line} \
---out ${line}2;
-done
-```
 
 #### Plot ancestry karyograms ####
 I have also written a visualization script to plot karyograms, which can be run for example as follows:
@@ -123,8 +113,7 @@ ind2_a.bed    ind2_b.bed...
 ```
 The ind_list input has individual IDs that will be used to summarize the output. The pops option specifies all of the populations to estimate global proportion ancestry for. I created this option so that UNK tracts could be easily dropped from global proportion ancestry estimated. An example txt output file is attached.
 
-
-
+## Running DNAnexus ###
 ### **Step 1: Set Up Your DNAnexus Project**
 
 1. **Upload Your Script and Data Files**:
