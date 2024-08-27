@@ -166,3 +166,125 @@ ind2_a.bed    ind2_b.bed...
 The ind_list input has individual IDs that will be used to summarize the output. The pops option specifies all of the populations to estimate global proportion ancestry for. I created this option so that UNK tracts could be easily dropped from global proportion ancestry estimated. An example txt output file is attached.
 
 
+
+### **Step 1: Set Up Your DNAnexus Project**
+
+1. **Upload Your Script and Data Files**:
+   - Ensure your script (`phased_rfmix_dn.sh`) and all required data files (e.g., `input.vcf`, `genetic_map.txt`, `classes.txt`, `sample_map.txt`) are uploaded to your DNAnexus project.
+
+   ```bash
+   dx upload phased_rfmix_dn.sh
+   dx upload input.vcf genetic_map.txt classes.txt sample_map.txt
+   ```
+
+2. **Test Your Script**:
+   - Run your script in DNAnexus to ensure everything is functioning as expected. You can do this through the DNAnexus platform’s UI or by using the `dx run` command.
+
+   ```bash
+   dx run your_applet_or_workflow_name --input_vcf=input.vcf --genetic_map=genetic_map.txt --classes_txt=classes.txt --sample_map=sample_map.txt
+   ```
+
+---
+
+### **Step 2: Create a Snapshot of Your DNAnexus Project**
+
+1. **Navigate to Your Project in DNAnexus**:
+   - Make sure you are within the correct DNAnexus project context.
+
+   ```bash
+   dx select project-xxxx  # Replace project-xxxx with your project ID
+   ```
+
+2. **Create the Snapshot**:
+   - Use the following command to create a snapshot of your entire project. This snapshot captures all files, scripts, and workflows at this point in time.
+
+   ```bash
+   dx create snapshot --name my_rfMix_workflow_snapshot
+   ```
+
+   - Replace `my_rfMix_workflow_snapshot` with a name that describes the snapshot.
+
+---
+
+### **Step 3: Verify the Snapshot**
+
+1. **List All Snapshots**:
+   - Check that your snapshot has been created by listing all snapshots in your project.
+
+   ```bash
+   dx list snapshots
+   ```
+
+2. **View Snapshot Details**:
+   - To see more details about your snapshot, use the `dx describe` command.
+
+   ```bash
+   dx describe --details my_rfMix_workflow_snapshot
+   ```
+
+   - Replace `my_rfMix_workflow_snapshot` with the name of your snapshot.
+
+---
+
+### **Step 4: Navigate to and Use the Snapshot**
+
+1. **Navigate to the Snapshot**:
+   - To work within the snapshot, navigate to it using the following command.
+
+   ```bash
+   dx cd $DX_PROJECT_CONTEXT_ID:snapshot-my_rfMix_workflow_snapshot
+   ```
+
+   - Replace `$DX_PROJECT_CONTEXT_ID` with your project’s ID and `my_rfMix_workflow_snapshot` with the snapshot name.
+
+2. **Run Workflows from the Snapshot**:
+   - You can run your applets or workflows from within this snapshot as if you were working in the main project environment.
+
+   ```bash
+   dx run your_applet_or_workflow_name --input_vcf=input.vcf --genetic_map=genetic_map.txt --classes_txt=classes.txt --sample_map=sample_map.txt
+   ```
+
+---
+
+### **Step 5: Restore or Duplicate the Snapshot (If Needed)**
+
+1. **Duplicate the Snapshot to a New Project**:
+   - If you ever need to restore or revert to the snapshot, create a new project based on the snapshot.
+
+   ```bash
+   dx new project "Restored Project from Snapshot"
+   dx cp -r snapshot-my_rfMix_workflow_snapshot/* project-xxxx:
+   ```
+
+   - Replace `snapshot-my_rfMix_workflow_snapshot` with your snapshot name and `project-xxxx` with the new project ID.
+
+---
+
+### **Complete Example Workflow**
+
+Here’s how the entire process might look in practice:
+
+```bash
+# Step 1: Set Up Your DNAnexus Project
+dx upload phased_rfmix_dn.sh
+dx upload input.vcf genetic_map.txt classes.txt sample_map.txt
+
+dx run your_applet_or_workflow_name --input_vcf=input.vcf --genetic_map=genetic_map.txt --classes_txt=classes.txt --sample_map=sample_map.txt
+
+# Step 2: Create a Snapshot of Your DNAnexus Project
+dx select project-xxxx  # Ensure you're in the correct project
+dx create snapshot --name my_rfMix_workflow_snapshot
+
+# Step 3: Verify the Snapshot
+dx list snapshots
+dx describe --details my_rfMix_workflow_snapshot
+
+# Step 4: Navigate to and Use the Snapshot
+dx cd $DX_PROJECT_CONTEXT_ID:snapshot-my_rfMix_workflow_snapshot
+dx run your_applet_or_workflow_name --input_vcf=input.vcf --genetic_map=genetic_map.txt --classes_txt=classes.txt --sample_map=sample_map.txt
+
+# Step 5: Restore or Duplicate the Snapshot (If Needed)
+dx new project "Restored Project from Snapshot"
+dx cp -r snapshot-my_rfMix_workflow_snapshot/* project-xxxx:
+```
+
