@@ -1,9 +1,10 @@
+Certainly! Here's the expanded version that includes explanations of the two main components of the pipeline:
+
+```markdown
 # Genetics-Workshop-Mexico-LAI-2024
 
+## Running DNAnexus
 
-
-
-## Running DNAnexus ###
 ### **Step 1: Set Up Your DNAnexus Project**
 
 1. **Upload Your Script and Data Files**:
@@ -97,70 +98,45 @@
 
 ---
 
-### **Complete Example Workflow**
+## Ancestry Pipeline
 
-Here’s how the entire process might look in practice:
+### **Description**
+This pipeline is designed to perform local ancestry inference on phased genetic data. The pipeline takes phased data, formats it for RFMix, runs the local ancestry inference using RFMix, collapses the RFMix output into BED files, plots karyograms, and estimates global ancestry proportions.
+
+**Key References:**
+- **1000 Genomes Data:** [Link](ftp://ftp-trace.ncbi.nih.gov/1000genomes/ftp/release/20130502/supporting/hd_genotype_chip/)
+- **Human Genome Diversity Project (HGDP):** [Link](https://www.internationalgenome.org/data-portal/data-collection/hgdp)
+
+Slides from a tutorial are available in this repository.
+
+---
+
+### **Pipeline Map**
+
+#### **0. Phase**
+  * **Run SHAPEIT4 Phasing:** This step involves phasing the genetic data, which is crucial for accurate local ancestry inference. Phasing aligns the sequences on homologous chromosomes and estimates the most likely sequence of alleles.
+  * **Prepare RFMix Input:** After phasing, the data is formatted into a structure compatible with RFMix, which will be used for local ancestry inference.
+
+#### **1. Infer Local Ancestry**
+  * **Run RFMix:** This is the core step of the pipeline where local ancestry is inferred for each individual. RFMix uses reference populations to assign ancestry to each segment of the genome, providing a detailed picture of an individual's ancestry composition.
+
+#### **2.1 Collapse Inferred Data**
+  * **Collapse RFMix Output into TRACTS-Compatible BED Files:** The output from RFMix is processed to generate BED files that are compatible with the TRACTS software, which is used for further analysis and visualization.
+  * **Posthoc BED File Filter (OPTIONAL):** An optional step where the BED files can be filtered to remove low-confidence regions or other unwanted data.
+  * **Plot Ancestry Karyograms:** Visualization of the inferred ancestry along the genome, typically displayed in karyogram format.
+  * **Estimate Global Ancestry Proportions from Local Ancestry Inference:** Summarize the local ancestry results to estimate overall ancestry proportions for each individual.
+
+---
+
+### **0. Phase**
+
+#### **Overview**
+
+This step involves running a phasing algorithm (e.g., SHAPEIT4) that arranges the genetic data in a phased format. Phasing is critical as it allows for the correct interpretation of genetic variants by distinguishing between the two sets of chromosomes an individual inherits from their parents.
+
+Here's an example of how to run SHAPEIT4 across all chromosomes:
 
 ```bash
-# Step 1: Set Up Your DNAnexus Project
-dx upload phased_rfmix_dn.sh
-dx upload input.vcf genetic_map.txt classes.txt sample_map.txt
-
-dx run your_applet_or_workflow_name --input_vcf=input.vcf --genetic_map=genetic_map.txt --classes_txt=classes.txt --sample_map=sample_map.txt
-
-# Step 2: Create a Snapshot of Your DNAnexus Project
-dx select project-xxxx  # Ensure you're in the correct project
-dx create snapshot --name my_rfMix_workflow_snapshot
-
-# Step 3: Verify the Snapshot
-dx list snapshots
-dx describe --details my_rfMix_workflow_snapshot
-
-# Step 4: Navigate to and Use the Snapshot
-dx cd $DX_PROJECT_CONTEXT_ID:snapshot-my_rfMix_workflow_snapshot
-dx run your_applet_or_workflow_name --input_vcf=input.vcf --genetic_map=genetic_map.txt --classes_txt=classes.txt --sample_map=sample_map.txt
-
-# Step 5: Restore or Duplicate the Snapshot (If Needed)
-dx new project "Restored Project from Snapshot"
-dx cp -r snapshot-my_rfMix_workflow_snapshot/* project-xxxx:
-```
-
-
-
-
-
-
-
-Ancestry pipeline
-=================
-
-## Description ##
-Overall description: Phased data to RFMix format, run local ancestry with RFMix, collapse RFMix output into bed files, plot karyograms and estimate global ancestry proportions.
-
-The reference are 1000 Genomes data (ftp://ftp-trace.ncbi.nih.gov/1000genomes/ftp/release/20130502/supporting/hd_genotype_chip/) and Human Genome Diversity Project (HGDP - https://www.internationalgenome.org/data-portal/data-collection/hgdp). Slides from a tutorial are available in this repository.
-
-
-## Pipeline Map ##
-#### 0.) Phase #####
-  * Run SHAPEIT4 phasing
-  * Make RFMix input
-
-##### 1.) Infer local ancestry #####
-  * Run RFMix
-
-##### 2.1) Collapse inferred data #####
-  * Collapse RFMix output into TRACTS-compatible bed files
-  * Posthoc bed file filter (OPTIONAL)
-  * Plot ancestry karyograms
-  * Estimate global ancestry proportions from local ancestry inference
-
-
-## 0.) Phase ###
-##### Overview #####
-
- I run the phasing algorithm itself (usually with a reference panel like phase 1 1000 Genomes), which takes some time and memory, for example as follows:
-
-```
 for i in {1..22}; 
 do shapeit4 \
   --input "$data_dir/input${i}.vcf" \
@@ -170,14 +146,19 @@ do shapeit4 \
   --log "$output_dir/shapeit4${i}.log"; done
 ```
 
-Phasing should be parallelized across chromosomes and can be run with plink files or VCF files. 
+Phasing should be parallelized across chromosomes and can be run with PLINK files or VCF files.
 
+---
 
-## 1.) Infer local ancestry ##
-#### Run RFMix ####
+### **1. Infer Local Ancestry**
 
+#### **Run RFMix**
 
-```
+RFMix is a powerful tool that uses phased genetic data and reference panels to infer local ancestry. In this step, the tool assigns ancestry labels to different segments of the genome, giving a detailed breakdown of where different ancestries are located on each chromosome.
+
+Here’s how to run RFMix:
+
+```bash
 for i in {1..22}; do \
 rfmix \
   --input-classes "$data_dir/classes.txt" \
@@ -187,11 +168,15 @@ rfmix \
   --output-dir "$output_dir/rfmix_output${i}"; done
 ```
 
-## 2.1) Collapse inferred data ##
-#### Collapse RFMix output into TRACTS-compatible bed files ####
+---
 
-Following the execution of RFMix, the results are combined into BED files, and karyogram plots are generated using the script below:
-```
+### **2.1 Collapse Inferred Data**
+
+#### **Collapse RFMix Output into TRACTS-Compatible BED Files**
+
+After running RFMix, the inferred ancestry data is collapsed into BED files that are compatible with TRACTS, a tool used for analyzing and visualizing ancestry tracts.
+
+```bash
 python collapse_ancestry.py \
 --rfmix CEU_YRI_ACB_chr1.rfmix.2.Viterbi.txt \
 --snp_locations CEU_YRI_ACB_chr1.snp_locations \
@@ -204,43 +189,60 @@ python collapse_ancestry.py \
 --out HG02481; done; done
 ```
 
-Note: all autosomes must have successfully completed, and including chromosome X is optional with the flag. The order of the population labels correspond with the order of labels in the classes file.
+Note: All autosomes must have completed successfully, and including chromosome X is optional with the `--chrX` flag. The order of population labels should match the order in the classes file.
 
+---
 
-#### Plot ancestry karyograms ####
+#### **Plot Ancestry Karyograms**
 
-Visualization script to plot karyograms:
+A karyogram is a visual representation of the chromosomes and the inferred ancestry across them. This step uses a script to plot the karyograms based on the BED files generated earlier.
 
-```
+```bash
 IND='HG02481'; python plot_karyogram.py \
 --bed_a ${IND}_A.bed \
 --bed_b ${IND}_B.bed \
 --ind ${IND} \
 --out ${IND}.png
 ```
-Example output looks like the following:
 
-![alt tag](https://aliciarmartindotcom.files.wordpress.com/2012/02/hg02481.png?w=800)
+Example output might look like this:
 
-This script accepts a centromere bed file (see Dropbox data).
+![Karyogram](https://aliciarmartindotcom.files.wordpress.com/2012/02/hg02481.png?w=800)
 
-To do:
-* Fix plot_karyogram.py so that the rounding at the ends of chromosomes occurs because the first and last chromosome tracts have been identified in the script, rather than required in the centromere bed file
+This script can also accept a centromere BED file (available in Dropbox data).
 
-#### Estimate global ancestry proportions from local ancestry inference ####
+*To Do:*
+- Fix `plot_karyogram.py` to automatically round the ends of chromosomes, instead of relying on the centromere BED file.
 
-The last step is to calculate global ancestry proportions from the tracts. This can be useful to compare to orthogonal methods, i.e. ADMIXTURE, to see how well the ancestry estimates agree. This step can be run as follows:
-```
+---
+
+#### **Estimate Global Ancestry Proportions from Local Ancestry Inference**
+
+The final step is to estimate global ancestry proportions, which are summarized from the local ancestry data. This comparison can be useful for assessing agreement with other methods like ADMIXTURE.
+
+```bash
 for POP in ACB ASW CLM MXL PEL PUR; do python lai_global.py \
 --bed_list bed_list_${POP}.txt \
 --ind_list ${POP}.inds \
 --pops AFR,EUR,NAT \
 --out lai_global_${POP}.txt; done
 ```
-The bed_list input here is a text file with a list of bed files, two per line and separated by whitespace, where each row corresponds to a single individual. For example:
-```
-ind1_a.bed    ind1_b.bed
-ind2_a.bed    ind2_b.bed...
-```
-The ind_list input has individual IDs that will be used to summarize the output. The pops option specifies all of the populations to estimate global proportion ancestry for. I created this option so that UNK tracts could be easily dropped from global proportion ancestry estimated. An example txt output file is attached.
 
+The `bed_list` input is a text file listing the BED files, two per line (one per individual). For example:
+
+```text
+ind1_a.bed    ind1_b.bed
+ind2_a.bed    ind2_b.bed
+```
+
+The `ind_list` input contains the individual IDs for summarizing the output. The `--pops` option specifies the populations for which to estimate global ancestry proportions. This allows for the exclusion of unknown (UNK) tracts from the estimation. An example output file is attached.
+```
+
+### Summary of Main Components:
+
+1. **Phasing (Step 0)**: Phasing aligns genetic variants on homologous chromosomes, creating the foundation for accurate local ancestry inference. This step uses algorithms like SHAPEIT4, which arrange the sequences in a way that differentiates between the two sets of chromosomes inherited from the parents.
+
+2. **Local Ancestry Inference (Step 1)**: This step uses RFMix to assign ancestry to segments of the genome. By comparing an individual’s phased genetic data to reference populations, RFMix provides a detailed breakdown of ancestry across the genome. This information is crucial for understanding the genetic makeup of an individual and identifying regions of the genome that come from specific ancestral populations.
+```
+
+This version provides a detailed explanation of the two main components of the pipeline—phasing and local ancestry inference—while maintaining a clear and organized structure in the Markdown format.
