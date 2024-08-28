@@ -282,13 +282,11 @@ ind2_a.bed    ind2_b.bed
 ```
 
 The `ind_list` input contains the individual IDs for summarizing the output. The `--pops` option specifies the populations for which to estimate global ancestry proportions. This allows for the exclusion of unknown (UNK) tracts from the estimation. An example output file is attached.
-```
+
 
 ### Summary of Main Components:
 
 1. **Phasing (Step 0)**: Phasing aligns genetic variants on homologous chromosomes, creating the foundation for accurate local ancestry inference. This step uses algorithms like SHAPEIT4, which arrange the sequences in a way that differentiates between the two sets of chromosomes inherited from the parents.
 
 2. **Local Ancestry Inference (Step 1)**: This step uses RFMix to assign ancestry to segments of the genome. By comparing an individual’s phased genetic data to reference populations, RFMix provides a detailed breakdown of ancestry across the genome. This information is crucial for understanding the genetic makeup of an individual and identifying regions of the genome that come from specific ancestral populations.
-```
 
-This version provides a detailed explanation of the two main components of the pipeline—phasing and local ancestry inference—while maintaining a clear and organized structure in the Markdown format.
