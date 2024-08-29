@@ -150,7 +150,7 @@ Before running the ancestry pipeline, it's crucial to set up your DNAnexus envir
 This pipeline is designed to perform local ancestry inference on phased genetic data. The pipeline takes phased data, formats it for RFMix, runs the local ancestry inference using RFMix, collapses the RFMix output into BED files, plots karyograms, and estimates global ancestry proportions.
 
 **Key References:**
-- **1000 Genomes Data:** [Link](ftp://ftp-trace.ncbi.nih.gov/1000genomes/ftp/release/20130502/supporting/hd_genotype_chip/)
+- **1000 Genomes Data:** [Link](https://www.internationalgenome.org/data/)
 - **Human Genome Diversity Project (HGDP):** [Link](https://www.internationalgenome.org/data-portal/data-collection/hgdp)
 
 Slides from a tutorial are available in this repository.
