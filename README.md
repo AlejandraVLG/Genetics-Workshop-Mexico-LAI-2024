@@ -38,8 +38,6 @@ By following this guide, you'll gain a **thorough understanding** of the entire 
    - Overview of the pipeline, which processes phased genetic data, runs RFMix for local ancestry inference, collapses RFMix output into BED files, and generates karyograms and global ancestry proportions.
 
 2. **[Pipeline Steps](#pipeline-steps)**
-   - **0. Phase**
-     - Run SHAPEIT4 phasing and prepare RFMix input.
    - **1. Infer Local Ancestry**
      - Execute RFMix to infer local ancestry for each individual.
    - **2.1 Collapse Inferred Data**
