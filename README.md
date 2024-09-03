@@ -147,7 +147,7 @@ Before running the ancestry pipeline, it's crucial to set up your DNAnexus envir
 ## Ancestry Pipeline
 
 ### **Description**
-This pipeline is designed to perform local ancestry inference on phased genetic data. The pipeline takes phased data, formats it for RFMix, runs the local ancestry inference using RFMix, collapses the RFMix output into BED files, plots karyograms, and estimates global ancestry proportions.
+This pipeline is designed to perform local ancestry inference on phased genetic data. The pipeline takes phased data formats for RFMix, runs the local ancestry inference using RFMix, collapses the RFMix output into BED files, plots karyograms, and estimates global ancestry proportions.
 
 **Key References:**
 - **1000 Genomes Data:** [Link](https://www.internationalgenome.org/data/)
@@ -159,9 +159,7 @@ Slides from a tutorial are available in this repository.
 
 ### **Pipeline Map**
 
-#### **0. Phase**
-  * **Run SHAPEIT4 Phasing:** This step involves phasing the genetic data, which is crucial for accurate local ancestry inference. Phasing aligns the sequences on homologous chromosomes and estimates the most likely sequence of alleles.
-  * **Prepare RFMix Input:** After phasing, the data is formatted into a structure compatible with RFMix, which will be used for local ancestry inference.
+You should have phased data in a format that aligns with RFMix specifications.
 
 #### **1. Infer Local Ancestry**
   * **Run RFMix:** This is the core step of the pipeline where local ancestry is inferred for each individual. RFMix uses reference populations to assign ancestry to each segment of the genome, providing a detailed picture of an individual's ancestry composition.
