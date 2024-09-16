@@ -5,9 +5,7 @@
 This workshop provides a **comprehensive guide** to performing **local ancestry inference** using **DNAnexus** and the **RFMix** toolset. The process is divided into two main parts:
 
 ### **🔧 Setting Up DNAnexus**
-- **Configure** your DNAnexus environment.
-- **Upload** necessary files.
-- **Create** a stable working environment through snapshots.
+- **Configure** a stable working environment through snapshots.
 
 ### **🚀 Ancestry Pipeline Execution**
 - After setting up DNAnexus, **run the ancestry pipeline** to process phased genetic data.
@@ -22,15 +20,9 @@ By following this guide, you'll gain a **thorough understanding** of the entire 
 
 ### **[1️⃣ Part 1: Running DNAnexus](#running-dnanexus)**
 
-1. **[Set Up Your DNAnexus Project](#set-up-dnanexus)**
-   - Upload necessary scripts and data files.
-   - Test the scripts to ensure they function correctly.
-   - Create and verify snapshots to capture the project's state.
-
-2. **[Create a Snapshot of Your DNAnexus Project](#create-snapshot)**
-   - Save the project's state by creating a snapshot.
+1. **[Snapshot of DNAnexus Project](#set-up-snapshot)**
    - Verify and use the snapshot as needed.
-   - Restore or duplicate the snapshot if necessary.
+
 
 ### **[2️⃣ Part 2: Ancestry Pipeline](#ancestry-pipeline)**
 
@@ -47,68 +39,7 @@ By following this guide, you'll gain a **thorough understanding** of the entire 
 
 ## Running DNAnexus
 
-### **Step 1: Set Up Your DNAnexus Project**
-
-Before running the ancestry pipeline, it's crucial to set up your DNAnexus environment. This includes uploading all necessary scripts and data files, testing to ensure everything works as expected, and creating snapshots to preserve the project's state.
-
-1. **Upload Your Script and Data Files**:
-   - Ensure that the script (`phased_rfmix_dn.sh`) and all required data files (e.g., `input.vcf`, `genetic_map.txt`, `classes.txt`, `sample_map.txt`) are uploaded to your DNAnexus project.
-
-   ```bash
-   dx upload phased_rfmix_dn.sh
-   dx upload input.vcf genetic_map.txt classes.txt sample_map.txt
-   ```
-
-2. **Test Your Script**:
-   - Run your script in DNAnexus to ensure everything is functioning as expected. You can do this through the DNAnexus platform’s UI or by using the `dx run` command.
-
-   ```bash
-   dx run your_applet_or_workflow_name --input_vcf=input.vcf --genetic_map=genetic_map.txt --classes_txt=classes.txt --sample_map=sample_map.txt
-   ```
-
----
-
-### **Step 2: Create a Snapshot of Your DNAnexus Project**
-
-1. **Navigate to Your Project in DNAnexus**:
-   - Make sure you are within the correct DNAnexus project context.
-
-   ```bash
-   dx select project-xxxx  # Replace project-xxxx with your project ID
-   ```
-
-2. **Create the Snapshot**:
-   - Use the following command to create a snapshot of your entire project. This snapshot captures all files, scripts, and workflows at this point in time.
-
-   ```bash
-   dx create snapshot --name my_rfMix_workflow_snapshot
-   ```
-
-   - Replace `my_rfMix_workflow_snapshot` with a name that describes the snapshot.
-
----
-
-### **Step 3: Verify the Snapshot**
-
-1. **List All Snapshots**:
-   - Check that your snapshot has been created by listing all snapshots in your project.
-
-   ```bash
-   dx list snapshots
-   ```
-
-2. **View Snapshot Details**:
-   - To see more details about your snapshot, use the `dx describe` command.
-
-   ```bash
-   dx describe --details my_rfMix_workflow_snapshot
-   ```
-
-   - Replace `my_rfMix_workflow_snapshot` with the name of your snapshot.
-
----
-
-### **Step 4: Navigate to and Use the Snapshot**
+### **Step 1: Navigate to and Use the Snapshot**
 
 1. **Navigate to the Snapshot**:
    - To work within the snapshot, navigate to it using the following command.
@@ -125,20 +56,6 @@ Before running the ancestry pipeline, it's crucial to set up your DNAnexus envir
    ```bash
    dx run your_applet_or_workflow_name --input_vcf=input.vcf --genetic_map=genetic_map.txt --classes_txt=classes.txt --sample_map=sample_map.txt
    ```
-
----
-
-### **Step 5: Restore or Duplicate the Snapshot (If Needed)**
-
-1. **Duplicate the Snapshot to a New Project**:
-   - If you ever need to restore or revert to the snapshot, create a new project based on the snapshot.
-
-   ```bash
-   dx new project "Restored Project from Snapshot"
-   dx cp -r snapshot-my_rfMix_workflow_snapshot/* project-xxxx:
-   ```
-
-   - Replace `snapshot-my_rfMix_workflow_snapshot` with your snapshot name and `project-xxxx` with the new project ID.
 
 ---
 
@@ -212,28 +129,6 @@ rfmix \
 
 ---
 
-### **2.1 Collapse Inferred Data**
-
-#### **Collapse RFMix Output into TRACTS-Compatible BED Files**
-
-After running RFMix, the inferred ancestry data is collapsed into BED files that are compatible with TRACTS, a tool used for analyzing and visualizing ancestry tracts.
-
-```bash
-python collapse_ancestry.py \
---rfmix CEU_YRI_ACB_chr1.rfmix.2.Viterbi.txt \
---snp_locations CEU_YRI_ACB_chr1.snp_locations \
---fbk CEU_YRI_ACB_chr1.rfmix.5.ForwardBackward.txt \
---fbk_threshold 0.9 \
---ind HG02481 \
---ind_info CEU_YRI_ACB.sample \
---pop_labels EUR,AFR \
---chrX \
---out HG02481; done; done
-```
-
-Note: All autosomes must have completed successfully, and including chromosome X is optional with the `--chrX` flag. The order of population labels should match the order in the classes file.
-
----
 
 #### **Plot Ancestry Karyograms**
 
@@ -247,14 +142,6 @@ IND='HG02481'; python plot_karyogram.py \
 --out ${IND}.png
 ```
 
-Example output might look like this:
-
-![Karyogram](https://aliciarmartindotcom.files.wordpress.com/2012/02/hg02481.png?w=800)
-
-This script can also accept a centromere BED file (available in Dropbox data).
-
-*To Do:*
-- Fix `plot_karyogram.py` to automatically round the ends of chromosomes, instead of relying on the centromere BED file.
 
 ---
 
@@ -263,19 +150,10 @@ This script can also accept a centromere BED file (available in Dropbox data).
 The final step is to estimate global ancestry proportions, which are summarized from the local ancestry data. This comparison can be useful for assessing agreement with other methods like ADMIXTURE.
 
 ```bash
-for POP in ACB ASW CLM MXL PEL PUR; do python lai_global.py \
---bed_list bed_list_${POP}.txt \
---ind_list ${POP}.inds \
---pops AFR,EUR,NAT \
---out lai_global_${POP}.txt; done
+Q files, script to make global admixture
 ```
 
-The `bed_list` input is a text file listing the BED files, two per line (one per individual). For example:
 
-```text
-ind1_a.bed    ind1_b.bed
-ind2_a.bed    ind2_b.bed
-```
 
 The `ind_list` input contains the individual IDs for summarizing the output. The `--pops` option specifies the populations for which to estimate global ancestry proportions. This allows for the exclusion of unknown (UNK) tracts from the estimation. An example output file is attached.
 
