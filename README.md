@@ -32,8 +32,6 @@ By following this guide, you'll gain a **thorough understanding** of the entire 
 2. **[Pipeline Steps](#pipeline-steps)**
    - **1. Infer Local Ancestry**
      - Execute RFMix to infer local ancestry for each individual.
-   - **2.1 Collapse Inferred Data**
-     - Collapse RFMix output into BED files, plot karyograms, and estimate global ancestry proportions.
 
 ---
 
@@ -48,7 +46,6 @@ By following this guide, you'll gain a **thorough understanding** of the entire 
    dx cd $DX_PROJECT_CONTEXT_ID:snapshot-my_rfMix_workflow_snapshot
    ```
 
-   - Replace `$DX_PROJECT_CONTEXT_ID` with your project’s ID and `my_rfMix_workflow_snapshot` with the snapshot name.
 
 2. **Run Workflows from the Snapshot**:
    - You can run your applets or workflows from within this snapshot as if you were working in the main project environment.
@@ -79,9 +76,7 @@ You should have phased data in a format that aligns with RFMix specifications.
 #### **1. Infer Local Ancestry**
   * **Run RFMix:** This is the core step of the pipeline where local ancestry is inferred for each individual. RFMix uses reference populations to assign ancestry to each segment of the genome, providing a detailed picture of an individual's ancestry composition.
 
-#### **2.1 Collapse Inferred Data**
-  * **Collapse RFMix Output into TRACTS-Compatible BED Files:** The output from RFMix is processed to generate BED files that are compatible with the TRACTS software, which is used for further analysis and visualization.
-  * **Posthoc BED File Filter (OPTIONAL):** An optional step where the BED files can be filtered to remove low-confidence regions or other unwanted data.
+#### **2.1 Visualisation
   * **Plot Ancestry Karyograms:** Visualization of the inferred ancestry along the genome, typically displayed in karyogram format.
   * **Estimate Global Ancestry Proportions from Local Ancestry Inference:** Summarize the local ancestry results to estimate overall ancestry proportions for each individual.
 
@@ -152,7 +147,6 @@ The final step is to estimate global ancestry proportions, which are summarized 
 ```bash
 Q files, script to make global admixture
 ```
-
 
 
 The `ind_list` input contains the individual IDs for summarizing the output. The `--pops` option specifies the populations for which to estimate global ancestry proportions. This allows for the exclusion of unknown (UNK) tracts from the estimation. An example output file is attached.
